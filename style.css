@@ -1,0 +1,14 @@
+/* style.css */
+
+body {
+  margin: 1rem;
+  padding: 0;
+  background-color: #dadada;
+  font-family: serif;
+}
+
+.text {
+  font-size: 2rem;
+  color: rgb(56, 124, 56);
+  text-decoration: none;
+}
