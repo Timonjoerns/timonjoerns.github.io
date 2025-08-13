@@ -12,3 +12,8 @@ body {
   color: rgb(56, 124, 56);
   text-decoration: none;
 }
+.textWhite{
+  color: rgb(255, 255, 255);
+  font-size: 2rem;
+  text-decoration: none;
+}
