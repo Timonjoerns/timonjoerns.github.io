@@ -19,42 +19,23 @@ h1 {
   letter-spacing: 0.05em;
 }
 
-a {
+/* Buttons für Kontakt + Impressum */
+.btn {
   font-size: 1.2rem;
   color: #2a7a2a;
   text-decoration: none;
   border: 2px solid #2a7a2a;
   padding: 0.4rem 1rem;
   border-radius: 9999px;
+  display: inline-block;
+  margin: 1rem 0;
   transition: all 0.3s ease;
 }
 
-a:hover {
+.btn:hover {
   background: #2a7a2a;
   color: #fff;
 }
-
-footer {
-  position: absolute;
-  bottom: 1rem;
-  width: 100%;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #666;
-  border: none;       /* stellt sicher, dass kein Rahmen angezeigt wird */
-  background: none;   /* kein Hintergrundblock */
-}
-
-footer a {
-  color: #666;
-  text-decoration: none;
-  margin: 0 0.5rem;
-}
-
-footer a:hover {
-  text-decoration: underline;
-}
-
 
 /* ab Tablets und größer */
 @media (min-width: 768px) {
@@ -62,7 +43,7 @@ footer a:hover {
     font-size: 3rem;
     margin-bottom: 3rem;
   }
-  a {
+  .btn {
     font-size: 1.2rem;
     padding: 0.6rem 1.5rem;
   }
