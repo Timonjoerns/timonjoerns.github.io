@@ -34,6 +34,27 @@ a:hover {
   color: #fff;
 }
 
+footer {
+  position: absolute;
+  bottom: 1rem;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #666;
+  border: none;       /* stellt sicher, dass kein Rahmen angezeigt wird */
+  background: none;   /* kein Hintergrundblock */
+}
+
+footer a {
+  color: #666;
+  text-decoration: none;
+  margin: 0 0.5rem;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
 
 /* ab Tablets und größer */
 @media (min-width: 768px) {
