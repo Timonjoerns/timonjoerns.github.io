@@ -10,6 +10,8 @@ body {
 main {
   max-width: 640px;       /* keeps text readable */
   padding: 2rem 2rem;     /* mobile default spacing */
+  position: relative;
+  z-index: 5;            /* above canvas */
 }
 
 h1 {
@@ -67,4 +69,17 @@ a:hover {
   a:hover {
     opacity: 0.75;       /* slightly gentler hover in dark mode */
   }
+}
+
+canvas {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  z-index: 0;           /* behind main content */
+  pointer-events: none; /* allow clicks to pass through to HTML elements */
+  cursor: pointer;
+}
+
+canvas.has-pointer-events {
+  pointer-events: auto; /* enable pointer events when hovering over floaties */
 }
