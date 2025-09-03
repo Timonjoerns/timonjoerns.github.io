@@ -1,77 +1,70 @@
 body {
   margin: 0;
-  height: 100vh;
-  background: #f4f4f4;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #222;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #111;
+  background: #fff;
 }
 
 main {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  max-width: 640px;       /* keeps text readable */
+  padding: 2rem 2rem;     /* mobile default spacing */
 }
 
 h1 {
-  font-size: 1.8rem;
-  margin: 0;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-  margin-bottom: 1.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
 }
 
-/* Buttons */
-.btn {
-  font-size: 1rem;
-  color: #000000;
-  text-decoration: none;
-  border: 1.5px solid #000000;
-  padding: 0.3rem 0.8rem;
-  border-radius: 9999px;
-  display: inline-block;
-  margin: 0;
-  margin-bottom: 0.8rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
+p {
+  margin: 0 0 1rem 0;
 }
 
-.btn:last-child {
-  margin-bottom: 0;
+a {
+  color: inherit;              /* inherits text color for light/dark */
+  text-decoration: underline;
 }
 
-.btn:hover {
-  background: #000000;
-  color: #fff;
+a:hover {
+  opacity: 0.6;
 }
 
-.btn:focus {
-  outline: 3px solid #000000;
-  outline-offset: 3px;
-}
+/* Tablet */
+@media (min-width: 600px) {
+  body {
+    font-size: 1.05rem;
+  }
 
-/* ab Tablets und größer */
-@media (min-width: 768px) {
   main {
-    padding: 3rem;
-    flex-direction: row;
-    align-items: center;
+    padding: 2rem 2rem;
   }
-  
-  h1 {
-    font-size: 2.2rem;
-    margin-bottom: 0;
-    margin-right: 2rem;
-  }
-  
-  .btn {
+}
+
+/* Desktop / large screens */
+@media (min-width: 1024px) {
+  body {
     font-size: 1.1rem;
-    padding: 0.5rem 1.2rem;
-    margin-bottom: 0;
-    margin-right: 0.8rem;
   }
-  
-  .btn:last-child {
-    margin-right: 0;
+
+  main {
+    padding: 3rem 3rem;  /* more breathing room */
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #f4f4f4;
+    background: #111;
+  }
+
+  a {
+    color: inherit;      /* links same color as text */
+  }
+
+  a:hover {
+    opacity: 0.75;       /* slightly gentler hover in dark mode */
   }
 }
