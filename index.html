@@ -1,43 +1,21 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Timon Jörns</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Preload images for faster first paint -->
-  <link rel="preload" as="image" href="Cover_v01.png" />
-  <link rel="preload" as="image" href="Lampe.png" />
-
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="bg"></canvas>
-
   <main>
     <h1>Timon Jörns</h1>
-    <p>Architektur &amp; Stadtplanung</p>
-    <p>
+    <p>Architektur & Stadtplanung</p>
+      <p>
       <a href="mailto:timon@joerns.info">Mail</a> ·
       <a href="impressum.html">Impressum</a>
     </p>
-
-    <!-- Accessible fallback links to the floaties -->
-    <nav aria-label="Projekte" class="visually-hidden">
-      <ul>
-        <li><a href="#1">Portfolio</a></li>
-        <li><a href="#2">Parametric Lamp</a></li>
-      </ul>
-    </nav>
   </main>
-
-  <noscript>
-    <div class="noscript">
-      <p>Für die Hintergrundanimation JavaScript aktivieren.</p>
-    </div>
-  </noscript>
-
-  <script src="app.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="floaty.js"></script>
 </body>
 </html>

@@ -1,66 +1,62 @@
 let floaties = [];
-const DEBUG = false;
-let cnvEl = null;
 
-// --- FLOATY CREATION ---
-function addFloaty(img, url, hoverText) {
-  let f = { img, url, hoverText };
-  f.size = random(260, 380); // mobile-first: smaller default
-  let halfWidth = f.size / 2;
-  let halfHeight = (f.size * f.img.height / f.img.width) / 2;
-
-  let safe = false;
-  while (!safe) {
-    f.x = random(halfWidth, width - halfWidth);
-    f.y = random(halfHeight, height - halfHeight);
-    safe = true;
-    for (let j = 0; j < floaties.length; j++) {
-      let other = floaties[j];
-      let dx = f.x - other.x;
-      let dy = f.y - other.y;
-      let distance = sqrt(dx*dx + dy*dy);
-      if (distance < (f.size/2 + other.size/2 + 20)) { 
-        safe = false;
-        break;
-      }
-    }
-  }
-
-  f.dx = random(-0.5, 0.5);
-  f.dy = random(-0.5, 0.5);
-  f.rotation = random(TWO_PI);
-  f.targetRotation = f.rotation;
-  f.baseRotationSpeed = random(-0.002, 0.002);
-  f.hoverScale = 1;
-  f.opacity = 150;
-  f.hoverColor = null;
-  f.storedSpeed = null;
-  floaties.push(f);
+function preload() {
+  floaties.push({ 
+    img: loadImage("Cover_v01.webp"), 
+    url: "#1", 
+    hoverText: "PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO" 
+  });
+  floaties.push({ 
+    img: loadImage("Lampe.webp"), 
+    url: "#2", 
+    hoverText: "PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP" 
+  });
 }
 
-// --- SETUP ---
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  pixelDensity(1); // always
-  cnvEl = document.querySelector('canvas');
-
   noStroke();
   imageMode(CENTER);
 
-  // ✅ Load PNG only
-  loadImage("Cover_v01.png", img => {
-    addFloaty(img, "#1", "PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO");
-  });
+  for (let i = 0; i < floaties.length; i++) {
+    let f = floaties[i];
+    f.size = random(400, 600); 
+    let halfWidth = f.size / 2;
+    let halfHeight = (f.size * f.img.height / f.img.width) / 2;
 
-  loadImage("Lampe.png", img => {
-    addFloaty(img, "#2", "PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP");
-  });
+    let safe = false;
+    while (!safe) {
+      f.x = random(halfWidth, width - halfWidth);
+      f.y = random(halfHeight, height - halfHeight);
+      safe = true;
+      for (let j = 0; j < i; j++) {
+        let other = floaties[j];
+        let dx = f.x - other.x;
+        let dy = f.y - other.y;
+        let distance = sqrt(dx*dx + dy*dy);
+        if (distance < (f.size/2 + other.size/2 + 20)) { 
+          safe = false;
+          break;
+        }
+      }
+    }
+
+    f.dx = random(-0.5, 0.5);
+    f.dy = random(-0.5, 0.5);
+    f.originalSpeed = { dx: f.dx, dy: f.dy }; // store original speed
+    f.rotation = random(TWO_PI);
+    f.targetRotation = f.rotation;
+    f.baseRotationSpeed = random(-0.002, 0.002);
+    f.hoverScale = 1;
+    f.opacity = 150;
+    f.hoverColor = null;
+    f.storedSpeed = null;
+  }
 
   textAlign(CENTER, CENTER);
   textSize(16);
 }
 
-// --- CIRCULAR TEXT ---
 function drawCircularText(str, x, y, radius) {
   push();
   translate(x, y);
@@ -77,16 +73,8 @@ function drawCircularText(str, x, y, radius) {
   pop();
 }
 
-// --- DRAW LOOP ---
 function draw() {
   clear();
-
-  if (floaties.length === 0) {
-    noStroke(); fill(0); textAlign(CENTER, CENTER);
-    text("Loading…", width / 2, height / 2);
-    return;
-  }
-
   let hovering = false;
 
   for (let f of floaties) {
@@ -133,6 +121,7 @@ function draw() {
       f.targetRotation += f.baseRotationSpeed;
     }
 
+    // draw floaty
     push();
     translate(f.x, f.y);
     rotate(f.rotation);
@@ -142,7 +131,7 @@ function draw() {
     pop();
   }
 
-  // simple separation collisions
+  // solid collision handling
   for (let i = 0; i < floaties.length; i++) {
     for (let j = i + 1; j < floaties.length; j++) {
       let f1 = floaties[i];
@@ -154,11 +143,13 @@ function draw() {
       if (distance < minDist) {
         let angle = atan2(dy, dx);
         let overlap = minDist - distance;
+        // push each floaty fully apart along the line connecting centers
         f1.x -= cos(angle) * overlap / 2;
         f1.y -= sin(angle) * overlap / 2;
         f2.x += cos(angle) * overlap / 2;
         f2.y += sin(angle) * overlap / 2;
 
+        // keep their original speed
         let tempDx = f1.dx;
         let tempDy = f1.dy;
         f1.dx = f2.dx;
@@ -169,7 +160,7 @@ function draw() {
     }
   }
 
-  // move and bounce
+  // move floaties and bounce edges
   for (let f of floaties) {
     let halfWidth = f.size / 2;
     let halfHeight = (f.size * f.img.height / f.img.width) / 2;
@@ -180,19 +171,21 @@ function draw() {
     if (f.y - halfHeight < 0 || f.y + halfHeight > height) f.dy *= -1;
   }
 
-  if (cnvEl) {
-    if (hovering) cnvEl.classList.add('has-pointer-events');
-    else cnvEl.classList.remove('has-pointer-events');
+  // Dynamically enable/disable pointer events based on hover state
+  if (hovering) {
+    document.querySelector('canvas').classList.add('has-pointer-events');
+  } else {
+    document.querySelector('canvas').classList.remove('has-pointer-events');
   }
 
   cursor(hovering ? 'pointer' : 'default');
 }
 
-// --- INPUT HANDLERS ---
-function handleClickOrTap() {
+function mousePressed() {
   for (let f of floaties) {
     let halfWidth = f.size / 2;
     let halfHeight = (f.size * f.img.height / f.img.width) / 2;
+
     if (mouseX > f.x - halfWidth &&
         mouseX < f.x + halfWidth &&
         mouseY > f.y - halfHeight &&
@@ -202,17 +195,9 @@ function handleClickOrTap() {
   }
 }
 
-function mousePressed() {
-  handleClickOrTap();
-}
-
-function touchStarted() {
-  handleClickOrTap();
-  return false; // prevent page scroll
-}
-
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+
   for (let f of floaties) {
     let halfWidth = f.size / 2;
     let halfHeight = (f.size * f.img.height / f.img.width) / 2;
