@@ -1,27 +1,13 @@
 let floaties = [];
-const DEBUG = true; // toggle to enable/disable debug logs
-
-function logOnce(label, data) {
-  if (!DEBUG) return;
-  try { console.log(label, data); } catch (_) {}
-}
 
 function preload() {
-  const t0 = performance.now();
-  const img1 = loadImage("Cover_v01.webp", () => {
-    if (DEBUG) console.log("Loaded Cover_v01.webp in", (performance.now() - t0).toFixed(1), "ms", { w: img1.width, h: img1.height });
-  });
   floaties.push({ 
-    img: img1, 
+    img: loadImage("Cover_v01.webp"), 
     url: "#1", 
     hoverText: "PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO" 
   });
-  const t1 = performance.now();
-  const img2 = loadImage("Lampe.webp", () => {
-    if (DEBUG) console.log("Loaded Lampe.webp in", (performance.now() - t1).toFixed(1), "ms", { w: img2.width, h: img2.height });
-  });
   floaties.push({ 
-    img: img2, 
+    img: loadImage("Lampe.webp"), 
     url: "#2", 
     hoverText: "PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP" 
   });
@@ -31,14 +17,6 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   noStroke();
   imageMode(CENTER);
-
-  if (DEBUG) {
-    console.log("Device info", {
-      ua: navigator.userAgent,
-      dpr: window.devicePixelRatio,
-      viewport: { w: window.innerWidth, h: window.innerHeight },
-    });
-  }
 
   for (let i = 0; i < floaties.length; i++) {
     let f = floaties[i];
@@ -77,35 +55,6 @@ function setup() {
 
   textAlign(CENTER, CENTER);
   textSize(16);
-
-  if (DEBUG) {
-    // Log resource timing after load
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const resources = performance.getEntriesByType('resource');
-        const table = resources.map(r => ({
-          name: r.name,
-          type: r.initiatorType,
-          transferKB: (r.transferSize || 0) / 1024,
-          decodedKB: (r.decodedBodySize || 0) / 1024,
-          durationMs: r.duration,
-        }));
-        console.table(table);
-        const totals = table.reduce((acc, r) => {
-          acc.transferKB += r.transferKB || 0;
-          acc.decodedKB += r.decodedKB || 0;
-          acc.durationMs += r.durationMs || 0;
-          return acc;
-        }, { transferKB: 0, decodedKB: 0, durationMs: 0 });
-        console.log("Resource totals", totals);
-      }, 0);
-    }, { once: true });
-
-    // Visibility diagnostics
-    document.addEventListener('visibilitychange', () => {
-      console.log('visibilitychange', { hidden: document.hidden, ts: performance.now().toFixed(0) });
-    });
-  }
 }
 
 function drawCircularText(str, x, y, radius) {
@@ -124,8 +73,6 @@ function drawCircularText(str, x, y, radius) {
   pop();
 }
 
-let _fpsLastLog = 0;
-let _fpsFrames = 0;
 function draw() {
   clear();
   let hovering = false;
@@ -232,21 +179,6 @@ function draw() {
   }
 
   cursor(hovering ? 'pointer' : 'default');
-
-  // FPS/debug (log every ~2000ms)
-  if (DEBUG) {
-    _fpsFrames++;
-    const now = performance.now();
-    if (!
-_fpsLastLog) { _fpsLastLog = now; }
-    const elapsed = now - _fpsLastLog;
-    if (elapsed >= 2000) {
-      const fps = (_fpsFrames / (elapsed / 1000)).toFixed(1);
-      console.log("Perf", { fps, floaties: floaties.length, canvas: { w: width, h: height }, dpr: window.devicePixelRatio });
-      _fpsFrames = 0;
-      _fpsLastLog = now;
-    }
-  }
 }
 
 function mousePressed() {

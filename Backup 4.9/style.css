@@ -1,0 +1,85 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #111;
+  background: #fff;
+}
+
+main {
+  max-width: 640px;       /* keeps text readable */
+  padding: 2rem 2rem;     /* mobile default spacing */
+  position: relative;
+  z-index: 5;            /* above canvas */
+}
+
+h1 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+}
+
+p {
+  margin: 0 0 1rem 0;
+}
+
+a {
+  color: inherit;              /* inherits text color for light/dark */
+  text-decoration: underline;
+}
+
+a:hover {
+  opacity: 0.6;
+}
+
+/* Tablet */
+@media (min-width: 600px) {
+  body {
+    font-size: 1.05rem;
+  }
+
+  main {
+    padding: 2rem 2rem;
+  }
+}
+
+/* Desktop / large screens */
+@media (min-width: 1024px) {
+  body {
+    font-size: 1.1rem;
+  }
+
+  main {
+    padding: 3rem 3rem;  /* more breathing room */
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #f4f4f4;
+    background: #111;
+  }
+
+  a {
+    color: inherit;      /* links same color as text */
+  }
+
+  a:hover {
+    opacity: 0.75;       /* slightly gentler hover in dark mode */
+  }
+}
+
+canvas {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  z-index: 0;           /* behind main content */
+  pointer-events: none; /* allow clicks to pass through to HTML elements */
+  cursor: pointer;
+}
+
+canvas.has-pointer-events {
+  pointer-events: auto; /* enable pointer events when hovering over floaties */
+}
