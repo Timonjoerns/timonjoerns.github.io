@@ -2,12 +2,12 @@ let floaties = [];
 
 function preload() {
   floaties.push({ 
-    img: loadImage("Cover_v01.png"), 
+    img: loadImage("Cover_v01.webp"), 
     url: "#1", 
     hoverText: "PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO" 
   });
   floaties.push({ 
-    img: loadImage("Lampe.png"), 
+    img: loadImage("Lampe.webp"), 
     url: "#2", 
     hoverText: "PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP" 
   });
@@ -20,7 +20,10 @@ function setup() {
 
   for (let i = 0; i < floaties.length; i++) {
     let f = floaties[i];
-    f.size = random(400, 600); 
+    f.size = random(400, 600
+
+      
+    ); 
     let halfWidth = f.size / 2;
     let halfHeight = (f.size * f.img.height / f.img.width) / 2;
 
