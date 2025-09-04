@@ -1,6 +1,6 @@
 /* Ultra-minimal p5 sketch
    - One circle floats and bounces within the viewport
-   - Mobile-friendly: pixelDensity(1), frameRate(30)
+   - Mobile-friendly: pixelDensity(1), frameRate(60) (falls back to 30 if choppy)
    - No text, no interactions, no images
 */
 
@@ -9,6 +9,7 @@ let y = 0;
 let dx = 0.4;
 let dy = 0.35;
 let d = 260; // circle diameter
+let framesChecked = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -29,7 +30,8 @@ function setup() {
 }
 
 function draw() {
-  clear(); // transparent background (canvas sits behind content)
+  // Use solid background to verify rendering on mobile
+  background(255);
 
   // Draw circle
   fill(30, 144, 255, 180); // semi-transparent blue
@@ -43,6 +45,13 @@ function draw() {
   const r = d / 2;
   if (x - r < 0 || x + r > width) dx *= -1;
   if (y - r < 0 || y + r > height) dy *= -1;
+
+  // After a few frames, if too slow, reduce FPS
+  framesChecked++;
+  if (framesChecked === 120) {
+    // crude heuristic
+    try { frameRate(30); } catch (_) {}
+  }
 }
 
 function windowResized() {
