@@ -1,7 +1,7 @@
 /* Minimal single-floaty p5 sketch
  - One image floats (PNG fallback if WEBP fails)
  - Desktop: hover shows circular text; click opens link
- - Mobile: first tap shows circular text (pauses floaty); second tap opens link
+ - Mobile: first tap shows circular text; second tap opens link
  - Canvas never blocks page links on mobile (pointer-events only when interacting)
 */
 
@@ -25,6 +25,21 @@ const floaty = {
   showingInfo: false,
   storedSpeed: null,
 };
+
+let loadingStatus = '';
+let watchdogTimer = null;
+let lastFrameTs = 0;
+let stallWatcher = null;
+let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator && navigator.wakeLock.request) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener && wakeLock.addEventListener('release', () => { /* noop */ });
+    }
+  } catch (_) { /* ignore */ }
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -51,17 +66,54 @@ function setup() {
   floaty.baseRotationSpeed = random(-0.002, 0.002);
 
   // Non-blocking image loading with PNG fallback and last-resort placeholder
+  loadingStatus = 'Loading image (webp)…';
   loadImage('Cover_v01.webp', (img) => {
     floaty.img = img;
+    loadingStatus = '';
+    if (watchdogTimer) { clearTimeout(watchdogTimer); watchdogTimer = null; }
   }, () => {
+    loadingStatus = 'WEBP failed → loading PNG…';
     loadImage('Cover_v01.png', (png) => {
       floaty.img = png;
+      loadingStatus = '';
+      if (watchdogTimer) { clearTimeout(watchdogTimer); watchdogTimer = null; }
     }, () => {
-      // Placeholder (never block rendering)
+      loadingStatus = 'Image failed → showing placeholder';
       const ph = createImage(16, 16); ph.loadPixels(); ph.updatePixels();
       floaty.img = ph;
+      if (watchdogTimer) { clearTimeout(watchdogTimer); watchdogTimer = null; }
     });
   });
+
+  // Watchdog: if image not ready after 2500ms, force a placeholder so UI never stalls
+  watchdogTimer = setTimeout(() => {
+    if (!floaty.img) {
+      loadingStatus = 'Network slow → placeholder';
+      const ph = createImage(16, 16); ph.loadPixels(); ph.updatePixels();
+      floaty.img = ph;
+    }
+  }, 2500);
+
+  // Resume hooks to avoid stalls
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      loop();
+    } else {
+      // Optional: pause when hidden to save power
+      noLoop();
+    }
+  });
+  window.addEventListener('focus', () => { loop(); });
+  window.addEventListener('blur', () => { /* keep running or pause if desired */ });
+
+  // Stall watcher: if no frames for > 1200ms while visible, kick the loop
+  stallWatcher = setInterval(() => {
+    if (document.hidden) return;
+    const now = performance.now();
+    if (now - lastFrameTs > 1200) {
+      loop();
+    }
+  }, 1500);
 
   textAlign(CENTER, CENTER);
   textSize(16);
@@ -82,11 +134,13 @@ function drawCircularText(str, x, y, radius) {
 }
 
 function draw() {
+  lastFrameTs = performance.now();
   clear();
 
-  // If image not ready yet, show tiny loading hint once
+  // If image not ready yet, show small loading hint and status
   if (!floaty.img) {
     fill(0); textAlign(CENTER, CENTER); text('Loading…', width / 2, height / 2);
+    if (loadingStatus) { textSize(12); text(loadingStatus, width / 2, height / 2 + 24); textSize(16); }
     return;
   }
 
@@ -134,7 +188,7 @@ function draw() {
   if (floaty.x - halfW < 0 || floaty.x + halfW > width) floaty.dx *= -1;
   if (floaty.y - halfH < 0 || floaty.y + halfH > height) floaty.dy *= -1;
 
-  // Pointer-events: never block links on mobile; on desktop enable only when hovering
+  // Pointer-events: never block links on mobile; on desktop enable only when interacting
   if (canvasEl) {
     if (!isMobile && (isHover || floaty.showingInfo)) canvasEl.classList.add('has-pointer-events');
     else canvasEl.classList.remove('has-pointer-events');
@@ -144,6 +198,10 @@ function draw() {
 }
 
 function handlePress(px, py) {
+  // Resume rendering aggressively on interaction
+  loop();
+  requestWakeLock();
+
   if (!floaty.img) return;
   const halfW = floaty.size / 2;
   const halfH = (floaty.size * floaty.img.height / floaty.img.width) / 2;
