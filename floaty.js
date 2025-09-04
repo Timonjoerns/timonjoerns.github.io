@@ -1,13 +1,11 @@
 let floaties = [];
-const DEBUG = false; 
-const IS_MOBILE = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768;
+const DEBUG = false;
 let cnvEl = null;
-let statusMsg = "";
 
 // --- FLOATY CREATION ---
 function addFloaty(img, url, hoverText) {
   let f = { img, url, hoverText };
-  f.size = IS_MOBILE ? random(260, 380) : random(400, 600);
+  f.size = random(260, 380); // mobile-first: smaller default
   let halfWidth = f.size / 2;
   let halfHeight = (f.size * f.img.height / f.img.width) / 2;
 
@@ -30,7 +28,6 @@ function addFloaty(img, url, hoverText) {
 
   f.dx = random(-0.5, 0.5);
   f.dy = random(-0.5, 0.5);
-  f.originalSpeed = { dx: f.dx, dy: f.dy };
   f.rotation = random(TWO_PI);
   f.targetRotation = f.rotation;
   f.baseRotationSpeed = random(-0.002, 0.002);
@@ -41,93 +38,23 @@ function addFloaty(img, url, hoverText) {
   floaties.push(f);
 }
 
-// --- IMAGE LOADING WITH FALLBACK ---
-function loadImageWithFallback(webpPath, pngPath, url, hoverText, label) {
-  function withTimeout(ms, onTimeout) {
-    const id = setTimeout(onTimeout, ms);
-    return () => clearTimeout(id);
-  }
-
-  statusMsg = `Loading ${label} (webp)…`;
-  let resolved = false;
-
-  const start = performance.now();
-  const clearTimer = withTimeout(2000, () => {
-    if (resolved) return;
-    statusMsg = `${label} webp slow → trying png…`;
-    const pngStart = performance.now();
-    loadImage(pngPath,
-      (img) => {
-        if (resolved) return;
-        resolved = true;
-        statusMsg = `${label} loaded PNG in ${(performance.now() - pngStart).toFixed(0)}ms`;
-        addFloaty(img, url, hoverText);
-      },
-      () => {
-        if (resolved) return;
-        resolved = true;
-        statusMsg = `${label} failed (png)`;
-        const ph = createImage(10, 10); ph.loadPixels(); ph.updatePixels();
-        addFloaty(ph, url, "");
-      }
-    );
-  });
-
-  loadImage(webpPath,
-    (img) => {
-      if (resolved) return;
-      resolved = true;
-      clearTimer();
-      statusMsg = `${label} loaded WEBP in ${(performance.now() - start).toFixed(0)}ms`;
-      addFloaty(img, url, hoverText);
-    },
-    () => {
-      if (resolved) return;
-      clearTimer();
-      statusMsg = `${label} webp error → trying png…`;
-      const pngStart = performance.now();
-      loadImage(pngPath,
-        (img) => {
-          if (resolved) return;
-          resolved = true;
-          statusMsg = `${label} loaded PNG in ${(performance.now() - pngStart).toFixed(0)}ms`;
-          addFloaty(img, url, hoverText);
-        },
-        () => {
-          if (resolved) return;
-          resolved = true;
-          statusMsg = `${label} failed (png)`;
-          const ph = createImage(10, 10); ph.loadPixels(); ph.updatePixels();
-          addFloaty(ph, url, "");
-        }
-      );
-    }
-  );
-}
-
 // --- SETUP ---
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  pixelDensity(1); // ✅ FIX: consistent across all devices
+  pixelDensity(1); // always
   cnvEl = document.querySelector('canvas');
-
-  if (IS_MOBILE) {
-    try { frameRate(30); } catch (_) {}
-  }
 
   noStroke();
   imageMode(CENTER);
 
-  loadImageWithFallback("Cover_v01.webp", "Cover_v01.png", "#1", "PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO", "Cover_v01");
-  loadImageWithFallback("Lampe.webp", "Lampe.png", "#2", "PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP", "Lampe");
+  // ✅ Load PNG only
+  loadImage("Cover_v01.png", img => {
+    addFloaty(img, "#1", "PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO");
+  });
 
-  setTimeout(() => {
-    if (floaties.length === 0) {
-      statusMsg = "Watchdog: inserting placeholder…";
-      const ph = createImage(10, 10); ph.loadPixels(); ph.updatePixels();
-      addFloaty(ph, "#0", "");
-    }
-  }, 2500);
+  loadImage("Lampe.png", img => {
+    addFloaty(img, "#2", "PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP");
+  });
 
   textAlign(CENTER, CENTER);
   textSize(16);
@@ -151,20 +78,12 @@ function drawCircularText(str, x, y, radius) {
 }
 
 // --- DRAW LOOP ---
-let _fpsLastLog = 0;
-let _fpsFrames = 0;
-
 function draw() {
   clear();
 
   if (floaties.length === 0) {
     noStroke(); fill(0); textAlign(CENTER, CENTER);
     text("Loading…", width / 2, height / 2);
-    if (statusMsg) {
-      textSize(12);
-      text(statusMsg, width / 2, height / 2 + 24);
-      textSize(16);
-    }
     return;
   }
 
@@ -223,7 +142,7 @@ function draw() {
     pop();
   }
 
-  // separation collisions
+  // simple separation collisions
   for (let i = 0; i < floaties.length; i++) {
     for (let j = i + 1; j < floaties.length; j++) {
       let f1 = floaties[i];
@@ -261,30 +180,16 @@ function draw() {
     if (f.y - halfHeight < 0 || f.y + halfHeight > height) f.dy *= -1;
   }
 
-  // ✅ FIX: allow clicks/taps on mobile too
   if (cnvEl) {
     if (hovering) cnvEl.classList.add('has-pointer-events');
     else cnvEl.classList.remove('has-pointer-events');
   }
 
   cursor(hovering ? 'pointer' : 'default');
-
-  if (DEBUG) {
-    _fpsFrames++;
-    const now = performance.now();
-    if (!_fpsLastLog) { _fpsLastLog = now; }
-    const elapsed = now - _fpsLastLog;
-    if (elapsed >= 2000) {
-      const fps = (_fpsFrames / (elapsed / 1000)).toFixed(1);
-      console.log("Perf", { fps, floaties: floaties.length, canvas: { w: width, h: height }, dpr: window.devicePixelRatio });
-      _fpsFrames = 0;
-      _fpsLastLog = now;
-    }
-  }
 }
 
 // --- INPUT HANDLERS ---
-function mousePressed() {
+function handleClickOrTap() {
   for (let f of floaties) {
     let halfWidth = f.size / 2;
     let halfHeight = (f.size * f.img.height / f.img.width) / 2;
@@ -297,10 +202,13 @@ function mousePressed() {
   }
 }
 
-// ✅ FIX: handle mobile taps
+function mousePressed() {
+  handleClickOrTap();
+}
+
 function touchStarted() {
-  mousePressed();
-  return false; 
+  handleClickOrTap();
+  return false; // prevent page scroll
 }
 
 function windowResized() {
