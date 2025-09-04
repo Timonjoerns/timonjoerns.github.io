@@ -295,8 +295,13 @@ function draw() {
 
   // Enable pointer events only when hovering, to preserve page interactivity
   if (cnvEl) {
-    if (hovering) cnvEl.classList.add('has-pointer-events');
-    else cnvEl.classList.remove('has-pointer-events');
+    if (!IS_MOBILE) {
+      if (hovering) cnvEl.classList.add('has-pointer-events');
+      else cnvEl.classList.remove('has-pointer-events');
+    } else {
+      // Always keep canvas non-interactive on mobile so links remain tappable
+      cnvEl.classList.remove('has-pointer-events');
+    }
   }
 
   cursor(hovering ? 'pointer' : 'default');
