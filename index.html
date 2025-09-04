@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Timon Jörns WIP</title>
-  <meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Timon Jörns</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Preload images -->
+  <link rel="preload" as="image" href="Cover_v01.png" />
+  <link rel="preload" as="image" href="Lampe.png" />
 </head>
 <body>
   <main>
     <h1>Timon Jörns</h1>
     <p>Architektur & Stadtplanung</p>
-      <p>
+    <p>
       <a href="mailto:timon@joerns.info">Mail</a> ·
       <a href="impressum.html">Impressum</a>
     </p>
   </main>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-<script src="floaty.js" defer></script>
+
+  <!-- PixiJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.0/pixi.min.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
