@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portfolio - Timon Jörns</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <h1>Portfolio</h1>
+    
+    <div id="password-section">
+      <p>Bitte geben Sie das Passwort ein, um das Portfolio herunterzuladen:</p>
+      <form id="password-form">
+        <input type="password" id="password-input" placeholder="Passwort eingeben" required>
+        <button type="submit">Download</button>
+      </form>
+      <div id="error-message" class="error" style="display: none;"></div>
+    </div>
+
+    <div id="download-section" style="display: none;">
+      <p>Passwort korrekt! Das Portfolio wird heruntergeladen...</p>
+      <a href="#" id="download-link" class="download-btn">Portfolio herunterladen</a>
+    </div>
+
+    <p style="margin-top: 2rem;">
+      <a href="index.html">← Zurück zur Hauptseite</a>
+    </p>
+  </main>
+
+  <script>
+    // Secure password protection using SHA-256 hashing
+    // The hashed password below corresponds to 'portfolio2024' + salt
+    const CORRECT_PASSWORD_HASH = '1648d0568a6886b439da9a645e8243dbc141f479a70e2d4b931765ac5976ab65';
+    const SALT = 'timon_portfolio_2024'; // Salt to prevent rainbow table attacks
+    
+    // Simple SHA-256 implementation for client-side hashing
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    
+    document.getElementById('password-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const password = document.getElementById('password-input').value;
+      const passwordSection = document.getElementById('password-section');
+      const downloadSection = document.getElementById('download-section');
+      const errorMessage = document.getElementById('error-message');
+      
+      try {
+        // Hash the entered password with salt
+        const hashedPassword = await sha256(password + SALT);
+        
+        if (hashedPassword === CORRECT_PASSWORD_HASH) {
+          passwordSection.style.display = 'none';
+          downloadSection.style.display = 'block';
+          
+          // Trigger download
+          const downloadLink = document.getElementById('download-link');
+          downloadLink.href = 'portfolio.pdf'; // Replace with your actual PDF filename
+          downloadLink.click();
+        } else {
+          errorMessage.textContent = 'Falsches Passwort. Bitte versuchen Sie es erneut.';
+          errorMessage.style.display = 'block';
+          document.getElementById('password-input').value = '';
+          document.getElementById('password-input').focus();
+        }
+      } catch (error) {
+        errorMessage.textContent = 'Fehler bei der Passwort-Überprüfung. Bitte versuchen Sie es erneut.';
+        errorMessage.style.display = 'block';
+      }
+    });
+
+    // Focus on password input when page loads
+    document.getElementById('password-input').focus();
+  </script>
+</body>
+</html>

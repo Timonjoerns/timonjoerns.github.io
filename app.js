@@ -4,7 +4,7 @@
 
 // ---------- Config ----------
 const FLOATIES = [
-  { src: 'Cover_v01.png', url: '#1', title: 'PORTFOLIO', hoverText: '- PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO ' },
+  { src: 'Cover_v01.png', url: 'portfolio.html', title: 'PORTFOLIO', hoverText: '- PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO ' },
   { src: 'Lampe.png',    url: '#2', title: 'PARAMETRIC LAMP', hoverText: '- PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP ' }
 ];
 
