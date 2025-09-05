@@ -1,27 +1,30 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Timon Jörns</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Timon Jörns — Floaties (Hybrid)</title>
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Preload images -->
-  <link rel="preload" as="image" href="Cover_v01.png" />
-  <link rel="preload" as="image" href="Lampe.png" />
-</head>
+  <!-- Pixi.js (v7) - loaded globally so app.js can use it -->
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@7/dist/pixi.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500;600;700&display=swap" rel="stylesheet">
 <body>
   <main>
     <h1>Timon Jörns</h1>
-    <p>Architektur & Stadtplanung</p>
+    <p>Architektur &amp; Stadtplanung</p>
     <p>
       <a href="mailto:timon@joerns.info">Mail</a> ·
       <a href="impressum.html">Impressum</a>
     </p>
+
+    <!-- Mobile feed container (populated by JS when on mobile) -->
+    <div id="mobile-feed" aria-live="polite"></div>
   </main>
 
-  <!-- PixiJS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.0/pixi.min.js"></script>
+  <noscript>
+    <p style="padding:1rem; text-align:center;">Enable JavaScript for animations.</p>
+  </noscript>
+
   <script src="app.js" defer></script>
 </body>
 </html>
