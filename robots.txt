@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Allow: /impressum.html
+Disallow: /portfolio.html
+
+Sitemap: https://timonjoerns.github.io/sitemap.xml
