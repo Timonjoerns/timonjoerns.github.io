@@ -1,6 +1,6 @@
 :root {
   --text: #111;
-  --bg: #fff;
+  --bg: #ffffff;
   --card-bg: #fff;
   --card-shadow: rgba(0, 0, 0, 0.08);
 }
@@ -8,7 +8,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #f4f4f4;
-    --bg: #111;
+    --bg: #383838;
     --card-bg: #141414;
     --card-shadow: rgba(0, 0, 0, 0.45);
   }
