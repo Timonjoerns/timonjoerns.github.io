@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portfolio Download - Timon Jörns</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Sicherer Download des Portfolios von Timon Jörns - Architektur und Stadtplanung." />
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>" />
+  
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <h1>Portfolio Download</h1>
+    
+    <div id="loading-section">
+      <p>Überprüfe Berechtigung...</p>
+    </div>
+    
+    <div id="success-section" style="display: none;">
+      <p>✅ Berechtigung bestätigt! Das Portfolio wird heruntergeladen...</p>
+      <p><small>Der Download sollte automatisch starten. Falls nicht, <a href="#" id="manual-download">klicken Sie hier</a>.</small></p>
+    </div>
+    
+    <div id="error-section" style="display: none;">
+      <p>❌ Ungültige oder abgelaufene Berechtigung.</p>
+      <p>Bitte <a href="portfolio.html">zurück zur Anmeldung</a> und geben Sie das Passwort erneut ein.</p>
+    </div>
+
+    <p style="margin-top: 2rem;">
+      <a href="index.html">← Zurück zur Hauptseite</a>
+    </p>
+  </main>
+
+  <script>
+    const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+    
+    // Session validation functions
+    function isValidSession(sessionId) {
+      try {
+        const sessionData = localStorage.getItem('portfolio_session');
+        if (!sessionData) return false;
+        
+        const session = JSON.parse(sessionData);
+        const now = Date.now();
+        
+        // Check if session ID matches and hasn't expired
+        if (session.id === sessionId && now <= session.expires) {
+          return true;
+        }
+        
+        // Clear invalid session
+        clearSession();
+        return false;
+      } catch (error) {
+        clearSession();
+        return false;
+      }
+    }
+    
+    function clearSession() {
+      localStorage.removeItem('portfolio_session');
+      document.cookie = 'portfolio_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    }
+    
+    function getSessionFromCookie() {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'portfolio_session') {
+          return value;
+        }
+      }
+      return null;
+    }
+    
+    function triggerDownload() {
+      // Create a temporary link to trigger download
+      const link = document.createElement('a');
+      link.href = 'Portfolio.pdf';
+      link.download = 'Portfolio_Timon_Joerns.pdf';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    // Main validation logic
+    function validateAndDownload() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session');
+      
+      // Also check cookie as backup
+      const cookieSessionId = getSessionFromCookie();
+      
+      const loadingSection = document.getElementById('loading-section');
+      const successSection = document.getElementById('success-section');
+      const errorSection = document.getElementById('error-section');
+      
+      // Validate session
+      if (sessionId && isValidSession(sessionId)) {
+        // Valid session - show success and trigger download
+        loadingSection.style.display = 'none';
+        successSection.style.display = 'block';
+        
+        // Trigger download after a short delay
+        setTimeout(() => {
+          triggerDownload();
+        }, 1000);
+        
+        // Set up manual download link
+        document.getElementById('manual-download').addEventListener('click', (e) => {
+          e.preventDefault();
+          triggerDownload();
+        });
+        
+      } else if (cookieSessionId && isValidSession(cookieSessionId)) {
+        // Valid cookie session - show success and trigger download
+        loadingSection.style.display = 'none';
+        successSection.style.display = 'block';
+        
+        setTimeout(() => {
+          triggerDownload();
+        }, 1000);
+        
+        document.getElementById('manual-download').addEventListener('click', (e) => {
+          e.preventDefault();
+          triggerDownload();
+        });
+        
+      } else {
+        // Invalid or missing session
+        loadingSection.style.display = 'none';
+        errorSection.style.display = 'block';
+        clearSession();
+      }
+    }
+    
+    // Run validation when page loads
+    document.addEventListener('DOMContentLoaded', validateAndDownload);
+    
+    // Also run immediately in case DOMContentLoaded already fired
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', validateAndDownload);
+    } else {
+      validateAndDownload();
+    }
+  </script>
+</body>
+</html>

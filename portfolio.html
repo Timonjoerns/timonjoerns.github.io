@@ -47,6 +47,11 @@
     <div id="download-section" style="display: none;">
       <p>Passwort korrekt! Das Portfolio wird heruntergeladen...</p>
       <a href="#" id="download-link" class="download-btn">Portfolio herunterladen</a>
+      <p style="margin-top: 1rem;">
+        <button type="button" id="logout-btn" style="background: none; border: none; color: var(--text); text-decoration: underline; cursor: pointer; font-family: inherit; font-size: 0.9rem;">
+          Sitzung beenden
+        </button>
+      </p>
     </div>
 
     <p style="margin-top: 2rem;">
@@ -59,6 +64,7 @@
     // The hashed password below corresponds to 'portfolio2024' + salt
     const CORRECT_PASSWORD_HASH = '1648d0568a6886b439da9a645e8243dbc141f479a70e2d4b931765ac5976ab65';
     const SALT = 'timon_portfolio_2024'; // Salt to prevent rainbow table attacks
+    const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
     
     // Simple SHA-256 implementation for client-side hashing
     async function sha256(message) {
@@ -66,6 +72,72 @@
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    
+    // Session management functions
+    function createSession() {
+      const sessionId = 'portfolio_session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      const expires = new Date(Date.now() + SESSION_DURATION);
+      
+      // Store session in localStorage with expiration
+      const sessionData = {
+        id: sessionId,
+        expires: expires.getTime(),
+        created: Date.now()
+      };
+      
+      localStorage.setItem('portfolio_session', JSON.stringify(sessionData));
+      
+      // Also set a session cookie as backup
+      document.cookie = `portfolio_session=${sessionId}; expires=${expires.toUTCString()}; path=/; SameSite=Strict; Secure`;
+      
+      return sessionId;
+    }
+    
+    function isValidSession() {
+      try {
+        const sessionData = localStorage.getItem('portfolio_session');
+        if (!sessionData) return false;
+        
+        const session = JSON.parse(sessionData);
+        const now = Date.now();
+        
+        // Check if session has expired
+        if (now > session.expires) {
+          clearSession();
+          return false;
+        }
+        
+        return true;
+      } catch (error) {
+        clearSession();
+        return false;
+      }
+    }
+    
+    function clearSession() {
+      localStorage.removeItem('portfolio_session');
+      document.cookie = 'portfolio_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    }
+    
+    function getSessionId() {
+      const sessionData = localStorage.getItem('portfolio_session');
+      if (sessionData) {
+        const session = JSON.parse(sessionData);
+        return session.id;
+      }
+      return null;
+    }
+    
+    // Check for existing valid session on page load
+    if (isValidSession()) {
+      document.getElementById('password-section').style.display = 'none';
+      document.getElementById('download-section').style.display = 'block';
+      
+      // Update download link with session parameter
+      const downloadLink = document.getElementById('download-link');
+      const sessionId = getSessionId();
+      downloadLink.href = `download-portfolio.html?session=${sessionId}`;
     }
     
     document.getElementById('password-form').addEventListener('submit', async function(e) {
@@ -81,12 +153,15 @@
         const hashedPassword = await sha256(password + SALT);
         
         if (hashedPassword === CORRECT_PASSWORD_HASH) {
+          // Create new session
+          const sessionId = createSession();
+          
           passwordSection.style.display = 'none';
           downloadSection.style.display = 'block';
           
-          // Trigger download
+          // Update download link with session parameter
           const downloadLink = document.getElementById('download-link');
-          downloadLink.href = 'Portfolio.pdf'; // Replace with your actual PDF filename
+          downloadLink.href = `download-portfolio.html?session=${sessionId}`;
           downloadLink.click();
         } else {
           errorMessage.textContent = 'Falsches Passwort. Bitte versuchen Sie es erneut.';
@@ -100,8 +175,26 @@
       }
     });
 
-    // Focus on password input when page loads
-    document.getElementById('password-input').focus();
+    // Focus on password input when page loads (if no valid session)
+    if (!isValidSession()) {
+      document.getElementById('password-input').focus();
+    }
+    
+    // Logout functionality
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      clearSession();
+      document.getElementById('password-section').style.display = 'block';
+      document.getElementById('download-section').style.display = 'none';
+      document.getElementById('password-input').focus();
+    });
+    
+    // Auto-clear expired sessions
+    setInterval(() => {
+      if (!isValidSession()) {
+        document.getElementById('password-section').style.display = 'block';
+        document.getElementById('download-section').style.display = 'none';
+      }
+    }, 60000); // Check every minute
   </script>
 </body>
 </html>
