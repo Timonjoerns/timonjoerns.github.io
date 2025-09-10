@@ -92,7 +92,6 @@ canvas {
   width: 100%;
   height: auto;
   object-fit: contain;
-  vertical-align: middle;
 }
 
 .feed-caption {
@@ -124,6 +123,13 @@ canvas {
     margin: 0 auto;
     max-width: 720px; /* expand for better readability */
     padding: 24px;
+  }
+  
+  /* Normalize image sizes in the mobile feed */
+  .feed-item img {
+    width: 100%;
+    height: min(64vw, 480px); /* consistent height across varying source sizes */
+    object-fit: cover; /* crop to fill, keeping composition centered */
   }
 }
 /* === Password form styles === */
