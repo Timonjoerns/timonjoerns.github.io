@@ -9,7 +9,7 @@ const FLOATIES = [
 ];
 
 const IS_MOBILE = window.innerWidth < 768;
-const DESKTOP_MAX_SIZE = 350;
+const DESKTOP_MAX_SIZE = 420; // Increased from 350 for bigger floaties
 const MOBILE_MAX_SIZE = Math.min(window.innerWidth, window.innerHeight) * 0.4;
 
 // If user crosses breakpoint, reload to re-init cleanly
@@ -60,8 +60,13 @@ if (IS_MOBILE) {
     throw new Error('PIXI not found');
   }
 
-  // Create Pixi app
-  const app = new PIXI.Application({ resizeTo: window, backgroundAlpha: 0 });
+  // Create Pixi app with optimized settings for 60fps
+  const app = new PIXI.Application({ 
+    resizeTo: window, 
+    backgroundAlpha: 0,
+    antialias: true, // Better visual quality
+    powerPreference: "high-performance" // Use dedicated GPU if available
+  });
   // Append canvas (CSS keeps it behind main)
   document.body.appendChild(app.view);
 
@@ -174,7 +179,7 @@ if (IS_MOBILE) {
         fontWeight: '100',
         fontSize: charSize,
         fill: color,
-        resolution: window.devicePixelRatio * 2,
+        resolution: Math.min(window.devicePixelRatio * 2, 3), // Cap resolution for performance
       });
       ch.anchor.set(0.5);
       ch.x = Math.cos(angle) * radius;
@@ -203,16 +208,16 @@ if (IS_MOBILE) {
       const hovering = Math.hypot(dx,dy) < Math.max(s.width,s.height)/2;
 
       const targetHover = hovering ? 1 : 0;
-      s.hoverProgress += (targetHover - s.hoverProgress) * 0.12;
+      s.hoverProgress += (targetHover - s.hoverProgress) * 0.15; // Slightly faster for smoother response
 
       const hoverScale = s.baseScale * (1 + 0.4 * s.hoverProgress);
-      s.scale.set(s.scale.x + (hoverScale - s.scale.x) * 0.12);
+      s.scale.set(s.scale.x + (hoverScale - s.scale.x) * 0.15); // Smoother scaling
       const targetAlpha = hovering ? 1 : 0.6;
-      s.alpha += (targetAlpha - s.alpha) * 0.12;
+      s.alpha += (targetAlpha - s.alpha) * 0.15; // Smoother alpha transitions
 
       s.currentRotationSpeed = s.baseRotationSpeed * (1 - s.hoverProgress);
       const targetRot = hovering ? 0 : s.targetRotation;
-      s.rotation += (targetRot - s.rotation) * 0.06 * s.hoverProgress;
+      s.rotation += (targetRot - s.rotation) * 0.12 * s.hoverProgress; // Increased from 0.06 for faster rotation to origin
 
       if (s.hoverProgress > 0.12 && hovering) {
         if (!s.hoverColor) {
