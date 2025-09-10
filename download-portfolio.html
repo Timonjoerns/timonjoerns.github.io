@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Portfolio Download - Timon Jörns</title>
+  <title>Timon Jörns - Portfolio Download</title>
   
   <!-- SEO Meta Tags -->
   <meta name="description" content="Sicherer Download des Portfolios von Timon Jörns - Architektur und Stadtplanung." />
@@ -12,7 +12,7 @@
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23fff'/><text x='50' y='68' font-size='72' text-anchor='middle' fill='%23000' font-family='Arial, Helvetica, sans-serif'>T</text></svg>" />
   
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -83,7 +83,7 @@
     function triggerDownload() {
       // Create a temporary link to trigger download
       const link = document.createElement('a');
-      link.href = 'Portfolio.pdf';
+      link.href = 'assets/documents/Portfolio.pdf';
       link.download = 'Portfolio_Timon_Joerns.pdf';
       link.style.display = 'none';
       document.body.appendChild(link);

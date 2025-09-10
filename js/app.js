@@ -4,8 +4,7 @@
 
 // ---------- Config ----------
 const FLOATIES = [
-  { src: 'Cover_v01.png', url: 'portfolio.html', title: 'Portfolio', hoverText: '- PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO ' },
-  { src: 'Lampe.png',    url: '', title: 'Parametric Lamp', hoverText: '- PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP ' }
+  { src: 'assets/images/Cover_v01.png', url: 'portfolio.html', title: 'Portfolio', hoverText: '- PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO ' }
 ];
 
 const IS_MOBILE = window.innerWidth < 768;

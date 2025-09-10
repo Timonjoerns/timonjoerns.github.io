@@ -24,9 +24,6 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, system-ui;
-
-
-  
   font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, system-ui;
 }
 
