@@ -175,7 +175,7 @@ if (IS_MOBILE) {
       const angle = (i / len) * Math.PI*2 - Math.PI/2;
       const ch = new PIXI.Text(text[i], {
         fontFamily: 'IBM Plex Sans',
-        fontWeight: '100',
+        fontWeight: '300',
         fontSize: charSize,
         fill: color,
         resolution: Math.min(window.devicePixelRatio * 2, 3), // Cap resolution for performance
@@ -219,19 +219,21 @@ if (IS_MOBILE) {
       s.rotation += (targetRot - s.rotation) * 0.12 * s.hoverProgress; // Increased from 0.06 for faster rotation to origin
 
       if (s.hoverProgress > 0.12 && hovering) {
-        if (!s.hoverColor) {
+        // Generate a new color on each new hover
+        if (!s._wasHovering) {
           s.hoverColor = PIXI.utils.rgb2hex([
-            0.2 + Math.random()*0.8,
-            0.2 + Math.random()*0.8,
-            0.2 + Math.random()*0.8
+            0.2 + Math.random() * 0.5,
+            0.2 + Math.random() * 0.5,
+            0.2 + Math.random() * 0.5
           ]);
         }
-        drawCircularText(s.textContainer, s.hoverText, Math.max(s.width,s.height)/2 + 20, s.hoverColor);
+        drawCircularText(s.textContainer, s.hoverText, Math.max(s.width, s.height) / 2, s.hoverColor);
         s.textContainer.x = s.x;
         s.textContainer.y = s.y;
+        s._wasHovering = true;
       } else {
         s.textContainer.removeChildren();
-        if (s.hoverProgress < 0.02) s.hoverColor = null;
+        s._wasHovering = false;
       }
     }
   }
