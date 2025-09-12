@@ -108,8 +108,8 @@ if (IS_MOBILE) {
     s.x = Math.random() * (window.innerWidth - margin*2) + margin;
     s.y = Math.random() * (window.innerHeight - margin*2) + margin;
 
-    s.vx = (Math.random() - 0.5) * 0.5;
-    s.vy = (Math.random() - 0.5) * 0.5;
+    s.vx = (Math.random() - 0.5) * 0.75;
+    s.vy = (Math.random() - 0.5) * 0.75;
 
     s.rotation = Math.random() * Math.PI * 2;
     s.targetRotation = s.rotation;
@@ -217,6 +217,17 @@ if (IS_MOBILE) {
       s.currentRotationSpeed = s.baseRotationSpeed * (1 - s.hoverProgress);
       const targetRot = hovering ? 0 : s.targetRotation;
       s.rotation += (targetRot - s.rotation) * 0.12 * s.hoverProgress; // Increased from 0.06 for faster rotation to origin
+
+      // Pause movement on hover
+      if (hovering) {
+        if (s._originalVx === undefined) s._originalVx = s.vx;
+        if (s._originalVy === undefined) s._originalVy = s.vy;
+        s.vx = 0;
+        s.vy = 0;
+      } else {
+        if (s._originalVx !== undefined) s.vx = s._originalVx;
+        if (s._originalVy !== undefined) s.vy = s._originalVy;
+      }
 
       if (s.hoverProgress > 0.12 && hovering) {
         // Generate a new color on each new hover
