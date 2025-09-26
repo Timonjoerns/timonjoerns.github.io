@@ -4,11 +4,12 @@
 
 // ---------- Config ----------
 const FLOATIES = [
-  { src: 'assets/images/Cover_v01.png', url: 'portfolio.html', title: 'Portfolio', hoverText: '- PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO ' }
+  { src: 'assets/images/Cover_v01.png', url: 'portfolio.html', title: 'Portfolio', hoverText: '- PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO ' },
+  { src: 'assets/images/siteplan.png', url: 'siteplan/build/index.html', title: 'SITEPLAN', hoverText: '- SITEPLAN - SITEPLAN - SITEPLAN - SITEPLAN ' }
 ];
 
 const IS_MOBILE = window.innerWidth < 768;
-const DESKTOP_MAX_SIZE = 420; // Increased from 350 for bigger floaties
+const DESKTOP_MAX_SIZE = 300; // Increased from 350 for bigger floaties
 const MOBILE_MAX_SIZE = Math.min(window.innerWidth, window.innerHeight) * 0.4;
 
 // If user crosses breakpoint, reload to re-init cleanly
