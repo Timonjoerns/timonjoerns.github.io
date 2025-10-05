@@ -33,6 +33,9 @@ if (IS_MOBILE) {
     const img = document.createElement('img');
     img.src = f.src;
     img.alt = f.title || f.hoverText.replace(/-|\s+/g, ' ').trim();
+    
+    // Add loading attribute for better performance
+    img.loading = i > 0 ? 'lazy' : 'eager';
 
     const caption = document.createElement('div');
     caption.className = 'feed-caption';
@@ -43,13 +46,13 @@ if (IS_MOBILE) {
     a.appendChild(caption);
 
     // Stagger breathing animation start for organic feel
-    a.style.animationDelay = `${(i * 0.6) % 3.6}s`;
+    a.style.animationDelay = `${(i * 0.8) % 4}s`;
 
     feed.appendChild(a);
   });
 
   // add bottom padding to main so last card isn't hidden by mobile UI chrome
-  document.querySelector('main').style.paddingBottom = '120px';
+  document.querySelector('main').style.paddingBottom = '80px';
   console.log('Mobile feed initialized with', FLOATIES.length, 'items.');
   // skip Pixi on mobile
 } else {
