@@ -5,7 +5,7 @@
 // ---------- Config ----------
 const FLOATIES = [
   { src: 'assets/images/Cover_v01.png', url: 'portfolio.html', title: 'Portfolio', hoverText: '- PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO ' },
-  { src: 'assets/images/siteplan.png', url: 'http://joerns.xyz/Quicksiteplan/', title: 'SITEPLAN', hoverText: '- SITEPLAN - SITEPLAN - SITEPLAN - SITEPLAN ' }
+  { src: 'assets/images/siteplan.png', url: 'http://joerns.xyz/Quicksiteplan/', title: 'Siteplan', hoverText: '- SITEPLAN - SITEPLAN - SITEPLAN - SITEPLAN ' }
 ];
 
 const IS_MOBILE = window.innerWidth < 768;
