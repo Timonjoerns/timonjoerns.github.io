@@ -4,13 +4,16 @@
 
 // ---------- Config ----------
 const FLOATIES = [
-  { src: 'assets/images/Cover_v01.png', url: 'portfolio.html', title: 'Portfolio', hoverText: '- PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO ' },
-  { src: 'assets/images/siteplan.png', url: 'http://joerns.xyz/Quicksiteplan/', title: 'Siteplan', hoverText: '- SITEPLAN - SITEPLAN - SITEPLAN - SITEPLAN ' }
+  { src: 'assets/images/Cover_v01.png', url: 'posts/portfolio.html', title: 'Portfolio', hoverText: '- PORTFOLIO - PORTFOLIO - PORTFOLIO - PORTFOLIO ' },
+  { src: 'assets/images/siteplan.png', url: 'http://joerns.xyz/Quicksiteplan/', title: 'Siteplan', hoverText: '- SITEPLAN - SITEPLAN - SITEPLAN - SITEPLAN ' },
+  { src: 'assets/images/parameticLamp.png', url: 'posts/parametric-lamp.html', title: 'Parametric Lamp', hoverText: '- PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP - PARAMETRIC LAMP ' }
 ];
 
 const IS_MOBILE = window.innerWidth < 768;
+
 const DESKTOP_MAX_SIZE = 300; // Increased from 350 for bigger floaties
 const MOBILE_MAX_SIZE = Math.min(window.innerWidth, window.innerHeight) * 0.4;
+
 
 // If user crosses breakpoint, reload to re-init cleanly
 let _initialIsMobile = IS_MOBILE;
@@ -112,8 +115,9 @@ if (IS_MOBILE) {
     s.x = Math.random() * (window.innerWidth - margin*2) + margin;
     s.y = Math.random() * (window.innerHeight - margin*2) + margin;
 
-    s.vx = (Math.random() - 0.5) * 0.75;
-    s.vy = (Math.random() - 0.5) * 0.75;
+    s.vx = (Math.random() - 0.5) * 1.8;
+    s.vy = (Math.random() - 0.5) * 1.8;
+    s.minSpeed = 0.8; // Minimum speed to maintain
 
     s.rotation = Math.random() * Math.PI * 2;
     s.targetRotation = s.rotation;
@@ -163,9 +167,10 @@ if (IS_MOBILE) {
           b.x += nx * overlap * 0.5;
           b.y += ny * overlap * 0.5;
 
+          const bounce = 0.9;
           const tx = a.vx, ty = a.vy;
-          a.vx = b.vx; a.vy = b.vy;
-          b.vx = tx; b.vy = ty;
+          a.vx = b.vx * bounce; a.vy = b.vy * bounce;
+          b.vx = tx * bounce; b.vy = ty * bounce;
         }
       }
     }
@@ -200,10 +205,19 @@ if (IS_MOBILE) {
       s.y += s.vy;
 
       const hw = s.width/2, hh = s.height/2;
-      if (s.x - hw < 0) { s.x = hw; s.vx *= -1; }
-      if (s.x + hw > window.innerWidth) { s.x = window.innerWidth - hw; s.vx *= -1; }
-      if (s.y - hh < 0) { s.y = hh; s.vy *= -1; }
-      if (s.y + hh > window.innerHeight) { s.y = window.innerHeight - hh; s.vy *= -1; }
+      const bounce = 0.85;
+      if (s.x - hw < 0) { s.x = hw; s.vx *= -bounce; }
+      if (s.x + hw > window.innerWidth) { s.x = window.innerWidth - hw; s.vx *= -bounce; }
+      if (s.y - hh < 0) { s.y = hh; s.vy *= -bounce; }
+      if (s.y + hh > window.innerHeight) { s.y = window.innerHeight - hh; s.vy *= -bounce; }
+
+      // Gradually restore speed if moving too slowly
+      const currentSpeed = Math.hypot(s.vx, s.vy);
+      if (currentSpeed < s.minSpeed && currentSpeed > 0.01) {
+        const speedBoost = 1.02; // Gradually increase speed by 2% per frame
+        s.vx *= speedBoost;
+        s.vy *= speedBoost;
+      }
 
       s.rotation += s.currentRotationSpeed;
 
